@@ -187,9 +187,11 @@ period_log10,p1,p5,p10,p15,p25,p50,p75,p90,p95,p99,p100
 - `period_log10`: log₁₀ of the period in seconds (e.g., `1.698970` = 50s, `0.0` = 1s)
 - `p1` through `p100`: power in dB at each percentile
 
-**Example PNG** — a heatmap of the full probability distribution with percentile curves overlaid:
+**Example PNG** — a heatmap of the full probability distribution with percentile curves overlaid (BKS HHZ, 2025):
 
-The PNG shows period (log₁₀ s) on the x-axis, power (dB) on the y-axis, and probability as a color mesh. Percentile lines (p5, p50, p95, etc.) are drawn on top so you can see the distribution shape at every period.
+![Probability Distribution — BKS HHZ 2025](docs/example_probability_BKS_HHZ.png)
+
+The plot shows period (log₁₀ s) on the x-axis, power (dB) on the y-axis, and probability as a color mesh. Percentile lines (p5, p50, p95, etc.) are drawn on top so you can see the distribution shape at every period.
 
 ---
 
@@ -263,6 +265,10 @@ Scatter plots saved to `psd_results/`:
 
 - **PNG files**: One per component. Each station appears as a labeled dot. The x-axis is PSD at period_x, y-axis is PSD at period_y. Outlier stations are immediately visible.
 - **Excel file**: One sheet per component, listing each station's PSD values at both periods.
+
+**Example PSD scatter plot** — BK network HHZ, 50s vs 1s, p50 (2025):
+
+![PSD Scatter Plot — BK HHZ 50s vs 1s](docs/example_psd_scatter_BK_HHZ.png)
 
 Stations that cluster together have similar noise characteristics. Outliers far from the cluster may indicate site issues, instrumentation problems, or unusual local noise sources.
 
