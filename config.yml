@@ -1,0 +1,26 @@
+base_dir: "/ref/dc14/PDF/STATS"
+network: "BK"
+stations: ["JCC", "MCCM", "RAMR", "FARB","BDM","TRAM","VAK","JRSC","WENL",
+            "TCHL","HOPS","TSCN","BL67","TCAS","BRK","PKD","CVS","SAO","HATC",
+            "THIS","HAST","MNRC","PACP","SCZ","TSCS","SHEP","SUTB","MHC",
+            "HUMO","YBH","ORV","MOD","CMB"]
+
+# [] (empty list) means all currently active stations
+location: "00"
+components: ["HHZ", "HHN", "HHE"] 
+
+period_x: 50
+period_y: 1
+stat: "p50"    # choose: p1, p5, p10, p15, p25, p50, p75, p90, p95, p99, p100
+               # OR legacy: min, mean, q_low, q_high, max, mode (mapped to nearest percentile)
+
+out_dir: "/home/gcl/TT/matthewju/psd"
+
+# Time range for the probability engine
+start_year: 2025
+end_year: 2025
+start_day: 1
+end_day: 366
+
+# Percentiles to compute (passed to probability engine)
+percentiles: [0.01, 0.05, 0.10, 0.15, 0.25, 0.50, 0.75, 0.90, 0.95, 0.99, 1.0]
