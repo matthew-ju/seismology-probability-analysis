@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import List
 
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import matplotlib.cm as cm
 import pandas as pd
 from adjustText import adjust_text
 
@@ -34,10 +36,29 @@ class ComponentPlotter:
             x_vals = [p.psd_x for p in comp_points]
             y_vals = [p.psd_y for p in comp_points]
             labels = [p.station for p in comp_points]
+            file_counts = [p.file_count for p in comp_points]
 
-            fig, ax = plt.subplots(figsize=(8, 8))
-            ax.scatter(x_vals, y_vals, s=60, edgecolors='black',
-                       linewidths=0.5, alpha=0.8, c='royalblue')
+            # Create custom colormap
+            colors = ['magenta', 'blue', 'cyan', 'lime', 'yellow', 'orange', 'red']
+            cmap = mcolors.LinearSegmentedColormap.from_list("completeness", colors)
+            
+            min_files = min(file_counts) if file_counts else 0
+            max_files = max(file_counts) if file_counts else 0
+            norm = mcolors.Normalize(vmin=min_files, vmax=max_files)
+
+            fig, ax = plt.subplots(figsize=(10, 8))
+            scatter = ax.scatter(x_vals, y_vals, s=80, edgecolors='black',
+                                 linewidths=0.5, alpha=0.9, 
+                                 c=file_counts, cmap=cmap, norm=norm)
+
+            # Add colorbar
+            cbar = fig.colorbar(scatter, ax=ax)
+            cbar.set_label('Data Completeness (File Count)')
+            
+            # Set specific ticks for min, mid, and max
+            mid_files = (min_files + max_files) / 2
+            cbar.set_ticks([min_files, mid_files, max_files])
+            cbar.set_ticklabels([f"{min_files} (Min)", f"{mid_files:.1f} (Mid)", f"{max_files} (Max)"])
 
             texts = []
             for x, y, label in zip(x_vals, y_vals, labels):
@@ -61,7 +82,7 @@ class ComponentPlotter:
             )
             ax.set_title(
                 f"Network: {self.cfg.network}, Component: {comp}\n"
-                f"Stat: {self.cfg.stat}  |  {self.cfg.start_year}-{self.cfg.end_year}",
+                f"Stat: {self.cfg.stat}  |  {self.cfg.start_year}.{self.cfg.start_day:03d} - {self.cfg.end_year}.{self.cfg.end_day:03d}",
                 fontsize=14,
             )
             ax.grid(True, linestyle='--', alpha=0.6)

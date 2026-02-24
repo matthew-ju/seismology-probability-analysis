@@ -14,4 +14,4 @@ DEFAULT_END_YEAR = 2025
 DEFAULT_END_DAY = 366        # e.g. 334 for 2026.334
 
 # e.g. [0.05, 0.10, 0.25] for 5th, 10th, and 25th percentiles
-DEFAULT_PERCENTILES = [0.01, 0.05, 0.1, 0.15, 0.25, 0.50, 0.75, 0.9, 0.95, 0.99, 1.0]
+DEFAULT_PERCENTILES = [0.05, 0.10]

@@ -149,21 +149,28 @@ def main() -> None:
             out_path = station_out_dir / filename
             
             plot_limits = {
-                "xlow": -1.698970, "xhigh": 2.0, 
+                "xlow": 0.02, "xhigh": 100.0, 
                 "ylow": -200.0, "yhigh": -50.0
             }
-            title = (f"PSD PDF: {config.DEFAULT_NETWORK}.{station}.{component} "
-                     f"({args.start_year}.{args.start_day} - {args.end_year}.{args.end_day})")
+            title = (f"PSD PDF: {args.network}.{station}.{args.location}.{component} "
+                     f"({args.start_year}.{args.start_day:03d} - {args.end_year}.{args.end_day:03d})")
             
             viz = PdfVisualizer(title, aggregator)
-            viz.render(args.percentiles, plot_limits)
+            # Plot only p5 and p10 by default to clean up the probability distribution plot
+            plot_percentiles = [p for p in args.percentiles if p in [0.05, 0.10]]
+            # Fallback to all requested if p5/p10 are not in the list
+            if not plot_percentiles:
+                plot_percentiles = args.percentiles
+            
+            viz.render(plot_percentiles, plot_limits)
             
             image_name = out_path.with_suffix(".png")
             viz.save(str(image_name))
             write_percentiles_csv(
                 out_path,
                 per_period,
-                args.percentiles
+                args.percentiles,
+                total_files=total_files_processed
             )
 
             print(f"Processed {station}.{component}: {total_files_processed} files. Saved to {station_out_dir}")

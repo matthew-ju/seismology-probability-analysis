@@ -1,6 +1,6 @@
 base_dir: "/ref/dc14/PDF/STATS"
 network: "BK"
-stations: ["JCC", "MCCM", "RAMR", "FARB","BDM","TRAM","VAK","JRSC","WENL",
+stations: ["BKS", "JCC", "MCCM", "RAMR", "FARB","BDM","TRAM","VAK","JRSC","WENL",
             "TCHL","HOPS","TSCN","BL67","TCAS","BRK","PKD","CVS","SAO","HATC",
             "THIS","HAST","MNRC","PACP","SCZ","TSCS","SHEP","SUTB","MHC",
             "HUMO","YBH","ORV","MOD","CMB"]

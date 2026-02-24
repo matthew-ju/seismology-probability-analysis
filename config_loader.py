@@ -63,7 +63,7 @@ def load_config(path: Path) -> PlotConfig:
     stations = _parse_stations(raw["stations"])
 
     # Percentile defaults matching probability/config.py
-    default_pcts = [0.01, 0.05, 0.10, 0.15, 0.25, 0.50, 0.75, 0.90, 0.95, 0.99, 1.0]
+    default_pcts = [0.05, 0.10]
     percentiles_raw = raw.get("percentiles", default_pcts)
     percentiles = [float(p) for p in percentiles_raw]
 

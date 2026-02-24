@@ -21,7 +21,7 @@ class BasePlotter:
 
     def _setup_style(self) -> None:
         self.ax.set_title(self.title)
-        self.ax.set_xlabel(r"Period ($\log_{10} s$)")
+        self.ax.set_xlabel(r"Period (s)")
         self.ax.set_ylabel(r"Power ($dB$)")
         self.ax.grid(True, which='both', linestyle='--', alpha=0.5)
 
@@ -66,21 +66,26 @@ class PdfVisualizer(BasePlotter):
                     i += 1
                 j += 1
 
+            # convert periods (log10 seconds) to regular seconds
+            periods_seconds = [10**p for p in periods]
+            
             mesh = self.ax.pcolormesh(
-                periods, powers, z_matrix, 
+                periods_seconds, powers, z_matrix, 
                 cmap=self.rainbow, vmin=0, vmax=0.30, shading='auto'
             )
+            self.ax.set_xscale('log')
             self.fig.colorbar(mesh, ax=self.ax, label="Probability")
-            self._plot_percentile_lines(percentiles)
+            self._plot_percentile_lines(periods, percentiles)
             self.ax.axis([limits['xlow'], limits['xhigh'], limits['ylow'], limits['yhigh']])
             
         except Exception as e:
             print(f"[ERROR] during rendering: {e}")
 
-    def _plot_percentile_lines(self, percentiles: Sequence[float]) -> None:
+    def _plot_percentile_lines(self, periods: Sequence[float], percentiles: Sequence[float]) -> None:
         """Calculates and draws lines for each requested percentile."""
+        # aggregator uses log10 periods
         results = self.aggregator.percentiles_all_periods(percentiles)
-        periods = sorted(results.keys())
+        periods_seconds = [10**p for p in periods]
         
         pct_idx = 0
         while pct_idx < len(percentiles):
@@ -93,14 +98,14 @@ class PdfVisualizer(BasePlotter):
             
             label = f"p{int(pct*100)}"
             line, = self.ax.plot(
-                periods, 
+                periods_seconds, 
                 y_values, 
                 label=label, 
-                linestyle='--', 
-                linewidth=2.0
+                linestyle=':', 
+                linewidth=1.0
             )
             line.set_path_effects([
-                pe.Stroke(linewidth=4, foreground='black'),
+                pe.Stroke(linewidth=2.0, foreground='black'),
                 pe.Normal()
             ])
             pct_idx += 1

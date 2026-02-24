@@ -87,6 +87,7 @@ def write_percentiles_csv(
     out_path: str | Path,
     per_period: Mapping[float, Mapping[float, float]],
     percentiles: Sequence[float],
+    total_files: int = 0,
     year: int | None = None,
     start_day: int | None = None,
     end_day: int | None = None,
@@ -100,6 +101,8 @@ def write_percentiles_csv(
         pct_labels.append(label)
         header.append(label)
         idx += 1
+    
+    header.append("total_files")
 
     path = Path(out_path)
     try:
@@ -118,6 +121,7 @@ def write_percentiles_csv(
                     power = pct_map.get(pct, float("nan"))
                     row.append(f"{power:.3f}")
                     c_idx += 1
+                row.append(str(total_files))
                 csv_writer.writerow(row)
                 p_idx += 1
     except OSError as exc:

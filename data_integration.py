@@ -108,19 +108,20 @@ class CSVReader:
             return matches[-1]  # most recent
         return None
 
-    def _read_value_at_period(self, csv_path: Path, target_period: float) -> float:
-        '''Read the stat column value at the row closest to target_period.'''
+    def _read_data_from_csv(self, csv_path: Path, target_period: float) -> tuple[float, int]:
+        '''Read the stat column value at the row closest to target_period, and file count.'''
         target_log = np.log10(target_period)
 
         periods_log = []
         values = []
+        file_count = 0
 
         with csv_path.open("r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
-            if self.stat_column not in (reader.fieldnames or []):
-                available = reader.fieldnames or []
-                print(f"  Warning: column '{self.stat_column}' not in {csv_path.name}. Available: {available}")
-                return float("nan")
+            fieldnames = reader.fieldnames or []
+            if self.stat_column not in fieldnames:
+                print(f"  Warning: column '{self.stat_column}' not in {csv_path.name}. Available: {fieldnames}")
+                return float("nan"), 0
 
             for row in reader:
                 try:
@@ -128,15 +129,18 @@ class CSVReader:
                     val = float(row[self.stat_column])
                     periods_log.append(p_log)
                     values.append(val)
+                    # total_files is the same for all rows in this CSV
+                    if "total_files" in row:
+                        file_count = int(row["total_files"])
                 except (ValueError, KeyError):
                     continue
 
         if not periods_log:
-            return float("nan")
+            return float("nan"), 0
 
         arr = np.array(periods_log)
         idx = int(np.argmin(np.abs(arr - target_log)))
-        return values[idx]
+        return values[idx], file_count
 
     def build_points(self, channels: List[StationChannel]) -> List[PSDPoint]:
         points: List[PSDPoint] = []
@@ -147,8 +151,8 @@ class CSVReader:
                 print(f"  No CSV found for {ch.station}.{ch.component}, skipping")
                 continue
 
-            val_x = self._read_value_at_period(csv_path, self.cfg.period_x)
-            val_y = self._read_value_at_period(csv_path, self.cfg.period_y)
+            val_x, files_x = self._read_data_from_csv(csv_path, self.cfg.period_x)
+            val_y, files_y = self._read_data_from_csv(csv_path, self.cfg.period_y)
 
             if np.isnan(val_x) or np.isnan(val_y):
                 print(f"  Warning: NaN value for {ch.station}.{ch.component}, skipping")
@@ -159,6 +163,7 @@ class CSVReader:
                 station=ch.station,
                 psd_x=val_x,
                 psd_y=val_y,
+                file_count=files_x # Assuming x and y have same file count from same CSV
             ))
 
         return points

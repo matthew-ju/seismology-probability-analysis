@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from itertools import product
 from pathlib import Path
-from typing import List, Set, Tuple
+from typing import List, Set, Tuple, Dict
 
 from core_models import StationChannel
 from config_loader import PlotConfig
@@ -46,7 +46,13 @@ class ChannelBuilder:
             print(f"COULDN'T READ: {summary_path}: {exc}", file=sys.stderr)
             return []
 
-        return sorted(list(stations))
+        # Ensure only one location per station to avoid duplicate nodes on plot
+        unique_stations: Dict[str, str] = {}
+        for stat, loc in sorted(list(stations)):
+            if stat not in unique_stations:
+                unique_stations[stat] = loc
+        
+        return sorted(list(unique_stations.items()))
 
     def build_channels(self) -> List[StationChannel]:
         active_pairs = self._load_active_hhz_stations()
